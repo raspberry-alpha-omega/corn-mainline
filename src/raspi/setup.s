@@ -44,7 +44,7 @@ asm_start:
    push {fp, ip, lr, pc}
    sub fp, ip, #4
 
-   bl not_main
+   bl os_init
 hang: b hang
 
 .globl dummy

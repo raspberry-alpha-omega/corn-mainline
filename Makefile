@@ -1,4 +1,4 @@
-ARCH = ../gcc-arm-none-eabi-4_6-2012q2/bin/arm-none-eabi
+ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi
 CC = ${ARCH}-gcc
 CPP = ${ARCH}-g++
 AS = ${ARCH}-as

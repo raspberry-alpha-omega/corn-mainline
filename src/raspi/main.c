@@ -1,17 +1,13 @@
-#include "raspi.h"
+#include "gpio.h"
 
-__attribute__((no_instrument_function))  void not_main(void)
-{
-   UINT32 sel = GET32(GPFSEL1);
-   sel &= ~(0b111 << 18);
-   sel |= (0b001 << 18);
-   PUT32(GPFSEL1,sel);
-  
-   while(1) 
-   {
-      PUT32(GPCLR0, 1<<16);
-      for (int i = 0; i < 0x100000; i++) ;
-      PUT32(GPSET0, 1<<16);
-      for (int i = 0; i < 0x100000; i++) ;
-   }
+int main(void) {
+	gpio_init();
+
+	while(1) {
+		raspi_okled_set(1);
+		raspi_timer_wait(500000);
+
+		raspi_okled_set(0);
+		raspi_timer_wait(500000);
+	}
 } 

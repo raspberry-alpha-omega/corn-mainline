@@ -1,5 +1,3 @@
-#C Crap
-.o
-kernel.bin
-.map
-
+src/raspi/gpio.o src/raspi/main.o src/raspi/os_init.o src/raspi/setup.o src/raspi/vectors.o
+.cproject
+.project
