@@ -50,7 +50,6 @@ hang: b hang
 .globl dummy
 dummy:
     bx lr
-
    
    .space 0x100
 temp_stack:
