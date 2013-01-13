@@ -86,6 +86,10 @@ void raspi_mini_uart_send_string(char* s) {
 		raspi_mini_uart_send_char(*s++);
 	}
 }
+void raspi_mini_uart_send_newline(void) {
+  raspi_mini_uart_send_char('\r');
+  raspi_mini_uart_send_char('\n');
+}
 
 void gpio_init() {
   raspi_okled_init();
