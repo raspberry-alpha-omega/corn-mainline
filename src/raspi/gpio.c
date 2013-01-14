@@ -67,9 +67,9 @@ void raspi_mini_uart_init() {
 }
 
 void raspi_mini_uart_wait_for_write() {
-	while(1) 	{
-		if (GET32(AUX_MU_LSR_REG)&0x20) break;
-	}
+  while(1) {
+    if (GET32(AUX_MU_LSR_REG)&0x20) break;
+  }
 }
 
 void raspi_mini_uart_write_char(char c) {
@@ -77,15 +77,27 @@ void raspi_mini_uart_write_char(char c) {
 }
 
 void raspi_mini_uart_send_char(char c) {
-	raspi_mini_uart_wait_for_write();
-	raspi_mini_uart_write_char(c);
+  raspi_mini_uart_wait_for_write();
+  raspi_mini_uart_write_char(c);
 }
 
-void raspi_mini_uart_send_string(char* s) {
-	while (*s) {
-		raspi_mini_uart_send_char(*s++);
-	}
+void raspi_mini_uart_send_string(const char* s) {
+  while (*s) {
+    raspi_mini_uart_send_char(*s++);
+  }
 }
+
+const char* hex_chars = "0123456789ABCDEF";
+
+void raspi_mini_uart_send_hex(uint32_t n) {
+  char hex[8+1] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  for (int i = 7; i >= 0; --i) {
+    hex[i] = hex_chars[n & 0xF];
+    n >>= 4;
+  }
+  raspi_mini_uart_send_string(hex);
+}
+
 void raspi_mini_uart_send_newline(void) {
   raspi_mini_uart_send_char('\r');
   raspi_mini_uart_send_char('\n');
