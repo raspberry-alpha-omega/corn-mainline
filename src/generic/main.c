@@ -1,5 +1,6 @@
 #include "gpio.h"
 #include "morse.h"
+#include "ledborg.h"
 #include "mailbox.h"
 
 /* Use some free memory in the area below the kernel/stack, 16-byte aligned */
@@ -148,8 +149,8 @@ void print_parameter(const char* name, uint32_t tag, int nwords) {
 }
 
 int main(void) {
-  gpio_init();
-
+//  rapi_okled_init();
+//  raspi_mini_uart_init();
 //  warmup();
 //
 //  print_parameter("firmware", MBX_TAG_GET_FIRMWARE, 1);
@@ -160,5 +161,7 @@ int main(void) {
 //  print_parameter("arm mem", MBX_TAG_GET_ARM_MEMORY, 2);
 //  print_parameter("vc mem", MBX_TAG_GET_VC_MEMORY, 2);
 
-  halt("jam ");
+  ledborg_init();
+  morse_set_switch(&ledborg_set_all);
+  halt("ledborg ");
 }

@@ -45,6 +45,7 @@ void raspi_mini_uart_send_string(const char* s);
 void raspi_mini_uart_send_hex(uint32_t n);
 void raspi_mini_uart_send_newline(void);
 
-void gpio_init();
+void raspi_okled_init();
+void raspi_mini_uart_init();
 
 #endif

@@ -1,12 +1,6 @@
 #include "morse.h"
 #include "gpio.h"
 
-static switch_fn switcher = (switch_fn)&raspi_okled_set;
-
-void set_switch(switch_fn fn) {
-  switcher = fn;
-}
-
 struct Morse { char letter; const char* symbol; } code[] = {
     { 'a', ".-" },
     { 'b', "-..." },
@@ -51,20 +45,26 @@ static int nchars = sizeof(code) / sizeof (struct Morse);
 // how fast do you want to go?
 // a value of 300000 takes about a minute to say "raspberry alpha omega"
 // smaller numbers make it faster
-#define dot_pause 300000
+#define dot_pause 150000
 
 #define dash_pause (dot_pause * 3)
 #define gap_pause dot_pause
 #define letter_pause (dot_pause * 3)
 #define word_pause (gap_pause * 7)
 
+static switch_fn switcher = &raspi_okled_set;
+
+void morse_set_switch(switch_fn fn) {
+  switcher = fn;
+}
+
 void switch_off(int duration) {
-  switcher(0);
+  switcher(GPIO_LOW);
   raspi_timer_wait(duration);
 }
 
 void switch_on(int duration) {
-  switcher(1);
+  switcher(GPIO_HIGH);
   raspi_timer_wait(duration);
 }
 
