@@ -150,15 +150,15 @@ void print_parameter(const char* name, uint32_t tag, int nwords) {
 int main(void) {
   gpio_init();
 
-  warmup();
+//  warmup();
+//
+//  print_parameter("firmware", MBX_TAG_GET_FIRMWARE, 1);
+//  print_parameter("board model", MBX_TAG_GET_BOARD_MODEL, 1);
+//  print_parameter("board rev", MBX_TAG_GET_BOARD_REVISION, 1);
+//  print_parameter("mac address", MBX_TAG_GET_MAC_ADDRESS, 2);
+//  print_parameter("board serial", MBX_TAG_GET_BOARD_SERIAL, 2);
+//  print_parameter("arm mem", MBX_TAG_GET_ARM_MEMORY, 2);
+//  print_parameter("vc mem", MBX_TAG_GET_VC_MEMORY, 2);
 
-  print_parameter("firmware", MBX_TAG_GET_FIRMWARE, 1);
-  print_parameter("board model", MBX_TAG_GET_BOARD_MODEL, 1);
-  print_parameter("board rev", MBX_TAG_GET_BOARD_REVISION, 1);
-  print_parameter("mac address", MBX_TAG_GET_MAC_ADDRESS, 2);
-  print_parameter("board serial", MBX_TAG_GET_BOARD_SERIAL, 2);
-  print_parameter("arm mem", MBX_TAG_GET_ARM_MEMORY, 2);
-  print_parameter("vc mem", MBX_TAG_GET_VC_MEMORY, 2);
-
-  halt("done ");
+  halt("jam ");
 }

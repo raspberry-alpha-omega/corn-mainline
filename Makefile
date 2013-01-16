@@ -1,10 +1,10 @@
-ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi
-CC = ${ARCH}-gcc
-CPP = ${ARCH}-g++
-AS = ${ARCH}-as
-LD = ${ARCH}-ld
-AR = ${ARCH}-ar
-OBJCOPY = ${ARCH}-objcopy
+ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi-
+CC = ${ARCH}gcc
+CPP = ${ARCH}g++
+AS = ${ARCH}as
+LD = ${ARCH}ld
+AR = ${ARCH}ar
+OBJCOPY = ${ARCH}objcopy
 
 PLATFORM = raspi
 
@@ -18,7 +18,6 @@ ASFLAGS = -g
 CFLAGS_FOR_TARGET = -mcpu=arm1176jzf-s
 ASFLAGS_FOR_TARGET = -mcpu=arm1176jzf-s
 LDFLAGS = -nostdlib -static --error-unresolved-symbols 
-
 
 MODULES := raspi generic
 SRC_DIR := $(addprefix src/,$(MODULES))
@@ -52,4 +51,3 @@ bin/kernel.elf: raspi.ld $(OBJ)
 
 clean:
 	rm -f bin/*.elf bin/*.img bin/*.map $(OBJ)
-

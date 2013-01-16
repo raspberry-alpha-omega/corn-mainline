@@ -1,4 +1,11 @@
+#include "morse.h"
 #include "gpio.h"
+
+static switch_fn switcher = (switch_fn)&raspi_okled_set;
+
+void set_switch(switch_fn fn) {
+  switcher = fn;
+}
 
 struct Morse { char letter; const char* symbol; } code[] = {
     { 'a', ".-" },
@@ -52,12 +59,12 @@ static int nchars = sizeof(code) / sizeof (struct Morse);
 #define word_pause (gap_pause * 7)
 
 void switch_off(int duration) {
-  raspi_okled_set(0);
+  switcher(0);
   raspi_timer_wait(duration);
 }
 
 void switch_on(int duration) {
-  raspi_okled_set(1);
+  switcher(1);
   raspi_timer_wait(duration);
 }
 

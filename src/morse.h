@@ -1,6 +1,9 @@
 #ifndef MORSE_H
 #define MORSE_H
 
+typedef void (*switch_fn)(int on);
+void set_switch(switch_fn fn);
+
 void switch_on(int usec);
 void switch_off(int usec);
 

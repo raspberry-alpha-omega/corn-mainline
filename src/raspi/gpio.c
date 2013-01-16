@@ -1,38 +1,49 @@
 #include <stdint.h>
+#include <stdint.h>
 
 #include "raspi.h"
 #include "gpio.h"
 
-#define TIMER_  0x20003000
-#define COUNTER 0x20003004
+static uint32_t* __gpio = (uint32_t*)GPIO_BASE;
+
+// BCM2835-ARM-Peripherals.pdf section 6.1
+// Each GPFSELn has 10 x 3 bits (with bits 31:30 reserved) 'b000 = i/p, 'b001 = o/p, others = alternate uses
+// Always use INP_GPIO(x) before using OUT_GPIO(x) as this will force 000 before setting 001
+
+#define INP_GPIO(g) *(__gpio+((g)/10)) &= ~(7<<(((g)%10)*3)) // existing bits ANDed with 111..111000111..111
+#define OUT_GPIO(g) *(__gpio+((g)/10)) |=  (1<<(((g)%10)*3)) // existing bits ORed  with 000..000001000..000
+
+// GPSETn is at PERI_BASE + GPIO_BASE + 0x1C bytes. 0x1C = 28 bytes = 7 dwords
+#define GPIO_SET *(__gpio+7)  // assigning 1<<n will set bit(n) only
+
+// GPCLRn is at PERI_BASE + GPIO_BASE + 0x28 bytes. 0x28 = 40 bytes = 10 dwords
+#define GPIO_CLR *(__gpio+10) // assigning 1<<n will clear bit(n) only
+
 #define OKLED (1<<16)
 
-#define AUX_ENABLES     0x20215004
-#define AUX_MU_IO_REG   0x20215040
-#define AUX_MU_IER_REG  0x20215044
-#define AUX_MU_IIR_REG  0x20215048
-#define AUX_MU_LCR_REG  0x2021504C
-#define AUX_MU_MCR_REG  0x20215050
-#define AUX_MU_LSR_REG  0x20215054
-#define AUX_MU_MSR_REG  0x20215058
-#define AUX_MU_SCRATCH  0x2021505C
-#define AUX_MU_CNTL_REG 0x20215060
-#define AUX_MU_STAT_REG 0x20215064
-#define AUX_MU_BAUD_REG 0x20215068
+#define PIN_BIT(pin) (1 << pin)
 
-void raspi_okled_init() {
-  uint32_t sel = GET32(GPFSEL1);
-  sel &= ~(0b111 << 18);
-  sel |= (0b001 << 18);
-  PUT32(GPFSEL1,sel);
+void raspi_set_gpio_direction(int pin, enum gpio_direction direction) {
+  INP_GPIO(pin);
+  if (GPIO_OUTPUT == direction) {
+    OUT_GPIO(pin);
+  }
 }
 
-void raspi_okled_set(int state) {
-  if (state) {
-    PUT32(GPCLR0, OKLED);
-  } else {
-    PUT32(GPSET0, OKLED);
-  }
+void raspi_set_gpio_level(int pin, enum gpio_level level) {
+  PUT32(level ? GPCLR0 : GPSET0, PIN_BIT(pin));
+}
+
+enum gpio_level raspi_get_gpio_level(int pin) {
+  return GPIO_LOW; // TODO how?
+}
+
+void raspi_okled_init() {
+  raspi_set_gpio_direction(16, GPIO_OUTPUT);
+}
+
+void raspi_okled_set(enum gpio_level level) {
+  raspi_set_gpio_level(16, level);
 }
 
 void raspi_timer_wait(int usec) {
