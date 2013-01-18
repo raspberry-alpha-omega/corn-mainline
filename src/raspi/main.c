@@ -3,6 +3,7 @@
 #include "ledborg.h"
 #include "mailbox.h"
 
+#if 0
 /* Use some free memory in the area below the kernel/stack, 16-byte aligned */
 #define BUFFER_ADDRESS 0x1000
 
@@ -147,8 +148,9 @@ void print_parameter(const char* name, uint32_t tag, int nwords) {
     dump_response(name, nwords);
   }
 }
+#endif
 
-int main(void) {
+void start() {
 //  rapi_okled_init();
 //  raspi_mini_uart_init();
 //  warmup();
@@ -163,5 +165,5 @@ int main(void) {
 
   ledborg_init();
   morse_set_switch(&ledborg_set_all);
-  halt("ledborg ");
+  halt("host ");
 }

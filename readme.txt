@@ -1,4 +1,5 @@
-This repo contains the "main line" of development of the CORNELIUS operating system and development language for the Raspberry Pi.
+This repo contains the "main line" of development of the CORNELIUS operating system and development language for the 
+Raspberry Pi.
 
 For more details see the development blog at http://raspberryalphaomega.org.uk/ 
 

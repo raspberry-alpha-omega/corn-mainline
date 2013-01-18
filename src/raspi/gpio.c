@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stdint.h>
 
-#include "raspi.h"
+#include "hardware.h"
+#include "memory.h"
 #include "gpio.h"
 
 static uint32_t* __gpio = (uint32_t*)GPIO_BASE;

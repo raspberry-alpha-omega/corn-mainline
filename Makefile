@@ -1,53 +1,47 @@
-ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi-
-CC = ${ARCH}gcc
-CPP = ${ARCH}g++
-AS = ${ARCH}as
-LD = ${ARCH}ld
-AR = ${ARCH}ar
-OBJCOPY = ${ARCH}objcopy
+export FLAVOURS = host raspi
+export MODULES = generic raspi stubs test
 
-PLATFORM = raspi
+default: all
 
-# Release Version -> Optimize 
-#CFLAGS = -O3 -std=gnu99 -Werror -D__$(PLATFORM)__ -DRASPBERRY_PI
-#ASFLAGS =
+CFLAGS_GLOBAL = -O0 -g -std=gnu99 -Werror 
+CFLAGS_TARGET = -D__$(PLATFORM)__ -DRASPBERRY_PI -fno-builtin -mcpu=arm1176jzf-s
+CFLAGS_HOST = 
 
-CFLAGS = -O0 -g -std=gnu99 -Werror -D__$(PLATFORM)__ -DRASPBERRY_PI -fno-builtin 
-ASFLAGS = -g
+LDFLAGS_GLOBAL = --error-unresolved-symbols 
+LDFLAGS_TARGET = -static -nostdlib 
+LDFLAGS_HOST = 
 
-CFLAGS_FOR_TARGET = -mcpu=arm1176jzf-s
-ASFLAGS_FOR_TARGET = -mcpu=arm1176jzf-s
-LDFLAGS = -nostdlib -static --error-unresolved-symbols 
 
-MODULES := raspi generic
-SRC_DIR := $(addprefix src/,$(MODULES))
-INC_DIR := $(addsuffix /include,$(SRC_DIR))
-BUILD_DIR := $(addsuffix /build,$(SRC_DIR))
+all: host target
 
-ASRC     := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
-AOBJ     := $(ASRC:.s=.o)
-CSRC     := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-COBJ     := $(CSRC:.c=.o)
+target: export ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi-
+target: export PLATFORM = raspi
+target: export CFLAGS = $(CFLAGS_GLOBAL) $(CFLAGS_TARGET) 
+target: export LDFLAGS = $(LDFLAGS_GLOBAL) $(LSFLAGS_TARGET) 
+target: export ASFLAGS = -mcpu=arm1176jzf-s -g
 
-INCLUDES := -Isrc $(addprefix -I,$(SRC_DIR) $(INC_DIR))
+host: export ARCH = # /drives/c/devtools/MinGW/bin/
+host: export PLATFORM = host
+host: export CFLAGS = $(CFLAGS_GLOBAL) $(CFLAGS_HOST) 
+host: export LDFLAGS = $(LDFLAGS_GLOBAL) $(LSFLAGS_HOST) 
 
-vpath %.c $(SRC_DIR)
-vpath %.cpp $(SRC_DIR)
-vpath %.s $(SRC_DIR)
+host: FORCE
+	cd src/stubs; $(MAKE)
+	cd src/generic; $(MAKE)
+	cd src/test; $(MAKE)
+	${ARCH}gcc -o bin/test ${LDFLAGS} lib/host/test.a lib/host/generic.a lib/host/stubs.a
+	bin/test
 
-%.o: %.c
-	$(CC) $(CFLAGS_FOR_TARGET) $(INCLUDES) $(CFLAGS) -c -o $*.o $<
-
-%.o: %.s
-	$(AS) $(ASFLAGS_FOR_TARGET) $(INCLUDES) $(ASFLAGS) -o $*.o $<
-
-OBJ = $(AOBJ) $(COBJ)
-
-bin/kernel.img: bin/kernel.elf
-	${OBJCOPY} -O binary $< $@
-
-bin/kernel.elf: raspi.ld $(OBJ) 
-	${LD} ${LDFLAGS}  $(OBJ) -Map bin/kernel.map -o $@ -T raspi.ld
-
-clean:
-	rm -f bin/*.elf bin/*.img bin/*.map $(OBJ)
+target: FORCE
+	cd src/raspi; $(MAKE)
+	cd src/generic; $(MAKE)
+	${ARCH}ld ${LDFLAGS} lib/raspi/generic.a lib/raspi/raspi.a lib/raspi/generic.a lib/raspi/raspi.a -Map bin/kernel.map -o bin/kernel.elf -T raspi.ld
+	${ARCH}objcopy -O binary bin/kernel.elf bin/kernel.img
+	
+clean: FORCE
+	rm -f bin/kernel.*
+	rm -f $(foreach flav,$(FLAVOURS),lib/$(flav)/*.a)
+	rm -f $(foreach mod,$(MODULES),$(foreach flav,$(FLAVOURS),src/$(mod)/$(flav)/*.o))
+	rm -f $(foreach mod,$(MODULES),src/$(mod)/*.o)
+	
+FORCE:
