@@ -11,7 +11,6 @@ LDFLAGS_GLOBAL = --error-unresolved-symbols
 LDFLAGS_TARGET = -static -nostdlib 
 LDFLAGS_HOST = 
 
-
 all: host target
 
 target: export ARCH = /drives/c/devtools/yagarto-20121222/bin/arm-none-eabi-
