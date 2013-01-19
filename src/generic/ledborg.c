@@ -5,10 +5,22 @@
 #define GREEN_PIN 21
 #define BLUE_PIN 22
 
+void ledborg_set_red(enum gpio_level level) {
+  raspi_set_gpio_level(17, !level);
+}
+
+void ledborg_set_green(enum gpio_level level) {
+  raspi_set_gpio_level(21, !level);
+}
+
+void ledborg_set_blue(enum gpio_level level) {
+  raspi_set_gpio_level(22, !level);
+}
+
 void ledborg_set(enum gpio_level red, enum gpio_level green, enum gpio_level blue) {
-  raspi_set_gpio_level(17, !red);
-  raspi_set_gpio_level(21, !green);
-  raspi_set_gpio_level(22, !red);
+  ledborg_set_red(red);
+  ledborg_set_green(green);
+  ledborg_set_blue(blue);
 }
 
 void ledborg_set_all(enum gpio_level level) {

@@ -3,7 +3,6 @@
 
 #include "gpio.h"
 
-typedef void (*switch_fn)(enum gpio_level);
 void morse_set_switch(switch_fn fn);
 
 void switch_on(int usec);

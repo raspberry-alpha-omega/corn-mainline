@@ -2,6 +2,7 @@
 #include "morse.h"
 #include "ledborg.h"
 #include "mailbox.h"
+#include "pwm.h"
 
 #if 0
 /* Use some free memory in the area below the kernel/stack, 16-byte aligned */
@@ -150,6 +151,22 @@ void print_parameter(const char* name, uint32_t tag, int nwords) {
 }
 #endif
 
+int wrap(int i) {
+  return i % 256;
+}
+
+#define GAP (256 / 3)
+
+void show(int i) {
+  pwm_set_cycle(0, wrap(i));
+  pwm_set_cycle(1, wrap(i + GAP));
+  pwm_set_cycle(2, wrap(i + GAP + GAP));
+  for (int t = 0; t < 256; ++t) {
+    pwm_tick();
+    raspi_timer_wait(1);
+  }
+}
+
 void start() {
 //  rapi_okled_init();
 //  raspi_mini_uart_init();
@@ -164,6 +181,30 @@ void start() {
 //  print_parameter("vc mem", MBX_TAG_GET_VC_MEMORY, 2);
 
   ledborg_init();
-  morse_set_switch(&ledborg_set_all);
-  halt("host ");
+  pwm_init(0xFF);
+  pwm_set_slot(0, &ledborg_set_red);
+  pwm_set_slot(1, &ledborg_set_green);
+  pwm_set_slot(2, &ledborg_set_blue);
+
+  for (;;) {
+    for (int red = 0; red < 256; ++red) {
+      for (int green = 0; green < 256; ++green) {
+        for (int blue = 0; blue < 256; ++blue) {
+          pwm_set_cycle(0, red);
+          pwm_set_cycle(1, green);
+          pwm_set_cycle(2, blue);
+
+          for (int t = 0; t < 256; ++t) {
+            pwm_tick();
+            raspi_timer_wait(10);
+          }
+        }
+      }
+    }
+  }
+
+  for (int i = 0;; i = (i+1)%256) {
+    show(i);
+  }
+  halt("x ");
 }
